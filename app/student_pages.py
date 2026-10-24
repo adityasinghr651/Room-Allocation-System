@@ -1,9 +1,10 @@
-"""Student-exclusive portal with personalized Hall Ticket, private seating map,
-exam guidelines, and secure password management.
-Guarantees strict privacy: students cannot inspect or infer other students' assignments.
+"""Student portal views with Vercel and Render minimalist styling:
+Digital examination pass, private blueprint seating navigator,
+candidate protocols, and secure password updates.
+Strictly zero emojis.
 """
 import streamlit as st
-from src.database import get_student_portal, change_password, get_seats
+from src.database import get_student_portal, change_password
 
 
 def render_student(page: str):
@@ -12,28 +13,26 @@ def render_student(page: str):
     data = get_student_portal(user['id'])
 
     if not data:
-        st.warning("⚠️ No student profile is linked to this login account. Please contact the administrator.")
+        st.warning("No student profile linked to this account. Contact examination control.")
         return
 
-    if page == "🎫 My Seating Pass":
+    if page == "Examination Pass":
         render_seating_pass(data)
-    elif page == "📍 Room Seating Map":
+    elif page == "Room Seating Map":
         render_room_map(data)
-    elif page == "📝 Exam Guidelines":
+    elif page == "Candidate Guidelines":
         render_exam_guidelines(data)
-    elif page == "🔒 Change Password":
+    elif page == "Update Password":
         render_change_password(user['id'])
 
 
 def render_seating_pass(data: dict):
     """Render formal exam hall ticket with personal seating details."""
     st.markdown("""
-    <div style="padding-bottom: 0.5rem;">
-        <div class="eyebrow">STUDENT PORTAL · PRIVATE DESK PASS</div>
-        <h1 style="margin: 0.2rem 0;">Examination Seating Pass</h1>
-        <p style="color: #94a3b8; font-size: 0.95rem;">
-            Official seat assignment details for the upcoming examination session.
-        </p>
+    <div style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.75rem;">
+        <div class="eyebrow">STUDENT PORTAL</div>
+        <h1 style="margin: 0.2rem 0 0.4rem 0;">Examination Pass</h1>
+        <p style="color: #a1a1aa; font-size: 0.92rem; margin: 0;">Official desk allocation for upcoming examination sessions.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -41,49 +40,49 @@ def render_seating_pass(data: dict):
 
     with c1:
         st.markdown(f"""
-        <div class="panel" style="border-top: 4px solid #3b82f6;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem;">
+        <div class="card" style="border-top: 2px solid #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
                 <div>
-                    <div class="eyebrow" style="color: #94a3b8;">STUDENT IDENTIFIER</div>
-                    <div style="font-size: 1.8rem; font-weight: 800; color: #ffffff; font-family: 'DM Mono', monospace;">
+                    <div class="eyebrow">CANDIDATE IDENTIFIER</div>
+                    <div style="font-size: 1.8rem; font-weight: 700; color: #ffffff; font-family: 'Geist Mono', monospace;">
                         {data['student_id']}
                     </div>
                 </div>
-                <span class="badge blue">GROUP {data['group_id']}</span>
+                <span class="badge badge-neutral">COHORT {data['group_id']}</span>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <div>
-                    <div class="metric-label">CANDIDATE NAME</div>
-                    <div style="font-size: 1.15rem; font-weight: 700; color: #f8fafc;">{data['name']}</div>
+                    <div class="eyebrow">CANDIDATE NAME</div>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: #ededed;">{data['name']}</div>
                 </div>
                 <div>
-                    <div class="metric-label">ACCESSIBILITY STATUS</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: {'#34d399' if data['requires_accessible_seat'] else '#94a3b8'};">
-                        {'♿ Special Accommodation' if data['requires_accessible_seat'] else 'Standard Seating'}
+                    <div class="eyebrow">ACCOMMODATION</div>
+                    <div style="font-size: 0.95rem; font-weight: 500; color: {'#34d399' if data['requires_accessible_seat'] else '#a1a1aa'}; font-family: 'Geist Mono', monospace;">
+                        {'ACCESSIBLE DESK' if data['requires_accessible_seat'] else 'STANDARD'}
                     </div>
                 </div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 1.2rem 0;">
+            <div style="border-top: 1px solid var(--border-subtle); margin: 1.25rem 0;"></div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div>
-                    <div class="metric-label">EXAM VENUE</div>
-                    <div style="font-size: 1.35rem; font-weight: 800; color: #60a5fa;">
-                        {data['room_name'] if data.get('room_name') else 'Pending Assignment'}
+                    <div class="eyebrow">ASSIGNED VENUE</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #ffffff;">
+                        {data['room_name'] if data.get('room_name') else 'Pending'}
                     </div>
                 </div>
                 <div>
-                    <div class="metric-label">DESIGNATED SEAT</div>
-                    <div style="font-size: 1.35rem; font-weight: 800; color: #34d399; font-family: 'DM Mono', monospace;">
+                    <div class="eyebrow">DESIGNATED DESK</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #ffffff; font-family: 'Geist Mono', monospace;">
                         {data['seat_label'] if data.get('seat_label') else 'Pending'}
                     </div>
                 </div>
             </div>
 
             {f'''
-            <div style="margin-top: 1rem; padding: 0.6rem 0.8rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 8px; font-size: 0.8rem; color: #93c5fd; font-family: 'DM Mono', monospace;">
+            <div style="margin-top: 1.25rem; padding: 0.6rem 0.8rem; background: #09090c; border: 1px solid #1c1c22; border-radius: 4px; font-size: 0.75rem; color: #a1a1aa; font-family: 'Geist Mono', monospace;">
                 Coordinates: Row {data.get("row_no")} · Column {data.get("col_no")} · Allocated: {data.get("allocation_date", "Recent")}
             </div>
             ''' if data.get('room_name') else ''}
@@ -93,29 +92,28 @@ def render_seating_pass(data: dict):
     with c2:
         if data.get('room_name'):
             st.markdown(f"""
-            <div class="panel" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3);">
-                <div class="eyebrow" style="color: #34d399;">STATUS: CONFIRMED</div>
-                <h3 style="color: #34d399; margin-top: 0.2rem;">Ready for Examination</h3>
-                <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5;">
-                    Your seat in <strong>{data['room_name']}</strong> has been validated by the Constraint Satisfaction Engine.
-                    Bring a valid student ID card and report to your hall 15 minutes before commencement.
+            <div class="card" style="border-color: #27272a;">
+                <div class="eyebrow" style="color: #34d399;">STATUS / CONFIRMED</div>
+                <h3 style="margin-top: 0.2rem;">Admitted to Examination</h3>
+                <p style="color: #a1a1aa; font-size: 0.85rem; line-height: 1.55;">
+                    Your desk in <strong>{data['room_name']}</strong> has been allocated and verified by the
+                    Constraint Satisfaction Engine. Bring your institutional photo ID to the examination venue.
                 </p>
-                <div style="margin-top: 1.5rem; padding: 0.8rem; background: #0b1120; border: 1px dashed #334155; border-radius: 8px; text-align: center;">
-                    <div style="font-family: 'DM Mono', monospace; font-size: 0.72rem; color: #94a3b8;">SECURITY HASH VERIFIED</div>
-                    <div style="font-family: 'DM Mono', monospace; font-size: 0.82rem; color: #60a5fa; margin-top: 4px;">
-                        HASH://CSP-{data['student_id']}-{data['room_name'].replace(' ', '')}-{data.get('row_no', 0)}{data.get('col_no', 0)}
+                <div style="margin-top: 1.5rem; padding: 0.8rem; background: #08080a; border: 1px solid #1c1c21; border-radius: 4px; text-align: center;">
+                    <div style="font-family: 'Geist Mono', monospace; font-size: 0.68rem; color: #71717a;">VERIFICATION DIGEST</div>
+                    <div style="font-family: 'Geist Mono', monospace; font-size: 0.78rem; color: #d4d4d8; margin-top: 3px;">
+                        HASH:CSP-{data['student_id']}-{data['room_name'].replace(' ', '')}-{data.get('row_no', 0)}{data.get('col_no', 0)}
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-            <div class="panel" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.3);">
-                <div class="eyebrow" style="color: #fbbf24;">STATUS: IN PROGRESS</div>
-                <h3 style="color: #fbbf24; margin-top: 0.2rem;">Seating Allocation Pending</h3>
-                <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5;">
-                    The examination seating solver is currently running or pending administrator publication.
-                    Check back shortly or contact examination control if this persists.
+            <div class="card">
+                <div class="eyebrow">STATUS / PENDING</div>
+                <h3 style="margin-top: 0.2rem;">Seating Allocation in Progress</h3>
+                <p style="color: #a1a1aa; font-size: 0.85rem; line-height: 1.55;">
+                    The examination seating plan is currently being computed or awaiting publication by the administrator.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -124,17 +122,15 @@ def render_seating_pass(data: dict):
 def render_room_map(data: dict):
     """Render physical room seating map highlighting only the student's personal seat."""
     st.markdown("""
-    <div style="padding-bottom: 0.5rem;">
-        <div class="eyebrow">PHYSICAL ROOM LAYOUT · SPATIAL NAVIGATOR</div>
-        <h1 style="margin: 0.2rem 0;">Room Seating Map</h1>
-        <p style="color: #94a3b8; font-size: 0.95rem;">
-            Spatial view showing the exact position of your desk relative to the room entrance and board.
-        </p>
+    <div style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.75rem;">
+        <div class="eyebrow">SPATIAL LOCATOR</div>
+        <h1 style="margin: 0.2rem 0 0.4rem 0;">Room Seating Map</h1>
+        <p style="color: #a1a1aa; font-size: 0.92rem; margin: 0;">Desk location relative to room entrance and blackboard.</p>
     </div>
     """, unsafe_allow_html=True)
 
     if not data.get('room_name'):
-        st.info("Your seat has not been allocated yet. Please check back once the seating run is finalized.")
+        st.info("Your desk allocation is pending. Check back once allocations are finalized.")
         return
 
     room_name = data['room_name']
@@ -143,104 +139,98 @@ def render_room_map(data: dict):
     my_row = data.get('row_no')
     my_col = data.get('col_no')
 
-    # Visual room representation
     st.markdown(f"""
-    <div class="room-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <div class="blueprint-room">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
             <div>
-                <span style="font-weight: 800; font-size: 1.25rem; color: #ffffff;">{room_name}</span>
-                <span class="badge blue" style="margin-left: 10px;">{rows} Rows × {cols} Columns</span>
+                <span style="font-weight: 700; font-size: 1.15rem; color: #ffffff;">{room_name}</span>
+                <span class="badge badge-neutral" style="margin-left: 8px;">{rows} Rows × {cols} Columns</span>
             </div>
-            <div style="font-size: 0.78rem; color: #94a3b8; font-family: 'DM Mono', monospace;">
-                YOUR DESK: <strong style="color: #60a5fa;">Row {my_row}, Col {my_col}</strong>
+            <div style="font-size: 0.75rem; color: #a1a1aa; font-family: 'Geist Mono', monospace;">
+                ASSIGNED: Row {my_row}, Col {my_col}
             </div>
         </div>
 
-        <div class="board-indicator">
-            ▲▲ FRONT OF EXAMINATION ROOM · TEACHER PODIUM & MAIN ENTRANCE ▲▲
+        <div class="blueprint-board">
+            FRONT OF VENUE · BOARD AND PROCTOR STATION
         </div>
 
-        <div style="overflow-x: auto; padding: 1rem 0;">
-            <div class="grid-bench" style="grid-template-columns: repeat({cols}, minmax(110px, 1fr));">
+        <div style="overflow-x: auto;">
+            <div class="blueprint-grid" style="grid-template-columns: repeat({cols}, minmax(110px, 1fr));">
     """, unsafe_allow_html=True)
 
     cells_html = []
     for r in range(1, rows + 1):
         for c in range(1, cols + 1):
             is_me = (r == my_row and c == my_col)
-            cell_class = "desk-cell my-seat" if is_me else "desk-cell occupied"
 
             if is_me:
                 content = f"""
-                <div class="{cell_class}">
-                    <div class="seat-title">Row {r}, Col {c}</div>
-                    <div class="seat-student-id" style="color: #60a5fa;">📍 YOUR DESK</div>
-                    <div class="seat-group grp-{data['group_id']}">GROUP {data['group_id']}</div>
+                <div class="blueprint-desk target-seat">
+                    <div class="desk-coord">R{r:02d}-C{c:02d}</div>
+                    <div class="desk-id" style="color: #ffffff;">YOUR DESK</div>
+                    <div class="desk-group-tag" style="background: #27272a; border-color: #52525b; color: #fff;">COHORT {data['group_id']}</div>
                 </div>
                 """
             else:
                 content = f"""
-                <div class="{cell_class}" style="opacity: 0.45;">
-                    <div class="seat-title">Row {r}, Col {c}</div>
-                    <div style="font-size: 0.8rem; color: #64748b; margin: 4px 0;">Occupied</div>
-                    <div style="font-size: 0.65rem; color: #475569; font-family: 'DM Mono', monospace;">Desk {r}-{c}</div>
+                <div class="blueprint-desk occupied" style="opacity: 0.35;">
+                    <div class="desk-coord">R{r:02d}-C{c:02d}</div>
+                    <div style="font-size: 0.75rem; color: #52525b; margin: 3px 0; font-family: 'Geist Mono', monospace;">Occupied</div>
+                    <div style="font-size: 0.62rem; color: #3f3f46; font-family: 'Geist Mono', monospace;">Desk {r}-{c}</div>
                 </div>
                 """
             cells_html.append(content)
 
     st.markdown("".join(cells_html) + "</div></div></div>", unsafe_allow_html=True)
-    st.caption("🔒 For student privacy, names and IDs of other candidates in the hall are anonymized.")
+    st.caption("Peer candidate identifiers are masked in compliance with student privacy policies.")
 
 
 def render_exam_guidelines(data: dict):
     """Render comprehensive examination rules and instructions."""
     st.markdown("""
-    <div style="padding-bottom: 0.5rem;">
-        <div class="eyebrow">EXAMINATION PROTOCOLS</div>
-        <h1 style="margin: 0.2rem 0;">Candidate Instructions & Guidelines</h1>
-        <p style="color: #94a3b8; font-size: 0.95rem;">
-            Please read and strictly abide by university examination regulations.
-        </p>
+    <div style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.75rem;">
+        <div class="eyebrow">PROTOCOLS</div>
+        <h1 style="margin: 0.2rem 0 0.4rem 0;">Candidate Guidelines</h1>
+        <p style="color: #a1a1aa; font-size: 0.92rem; margin: 0;">Institutional regulations for written and practical examinations.</p>
     </div>
     """, unsafe_allow_html=True)
 
     g1, g2 = st.columns(2, gap="medium")
     with g1:
         st.markdown("""
-        <div class="panel">
-            <h3>⏰ Arrival & Identity Verification</h3>
-            <ul style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.7; padding-left: 1.2rem;">
-                <li>Candidates must be seated at their designated desk at least <strong>15 minutes prior</strong> to the scheduled start time.</li>
-                <li>You must produce your official <strong>Student ID card</strong> alongside your Seating Pass.</li>
-                <li>No candidate may swap seats or occupy an unassigned desk under any circumstances.</li>
-                <li>Students arriving more than 30 minutes after commencement will not be permitted into the examination hall.</li>
+        <div class="card">
+            <h3>Arrival & Identity Checks</h3>
+            <ul style="color: #a1a1aa; font-size: 0.85rem; line-height: 1.65; padding-left: 1.2rem; margin-top: 0.5rem;">
+                <li>Report to your assigned venue at least <strong>15 minutes prior</strong> to start time.</li>
+                <li>Display your official <strong>Student Photo ID</strong> and Examination Pass on the desk.</li>
+                <li>Desk swapping or occupying an unassigned seat is strictly prohibited.</li>
+                <li>Late arrivals beyond 30 minutes post-commencement are barred from entry.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
 
     with g2:
         st.markdown("""
-        <div class="panel">
-            <h3>🚫 Prohibited Materials & Conduct</h3>
-            <ul style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.7; padding-left: 1.2rem;">
-                <li>Mobile phones, smartwatches, and programmable devices are strictly prohibited and must be left at the hall entrance.</li>
-                <li>Only clear pencil cases containing approved writing stationery are permitted at your desk.</li>
-                <li>Communication between candidates is strictly forbidden. The room layout has been generated with AI spacing constraints to ensure academic integrity.</li>
-                <li>Report any seating discrepancies or accessibility requirements to the chief invigilator immediately.</li>
+        <div class="card">
+            <h3>Prohibited Materials</h3>
+            <ul style="color: #a1a1aa; font-size: 0.85rem; line-height: 1.65; padding-left: 1.2rem; margin-top: 0.5rem;">
+                <li>Mobile phones, smartwatches, and wireless transceivers must remain switched off.</li>
+                <li>Only clear, transparent pencil cases are permitted at desks.</li>
+                <li>Peer communication during examinations constitutes an academic integrity violation.</li>
+                <li>Seating arrangements are mathematically optimized to enforce cohort separation.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
 
 
 def render_change_password(user_id: int):
-    """Allow student to securely change their login password."""
+    """Allow student to securely update their account password."""
     st.markdown("""
-    <div style="padding-bottom: 0.5rem;">
-        <div class="eyebrow">ACCOUNT SECURITY</div>
-        <h1 style="margin: 0.2rem 0;">Update Password</h1>
-        <p style="color: #94a3b8; font-size: 0.95rem;">
-            Change your account password. Passwords are saved as salted PBKDF2 hashes.
-        </p>
+    <div style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.75rem;">
+        <div class="eyebrow">SECURITY</div>
+        <h1 style="margin: 0.2rem 0 0.4rem 0;">Update Password</h1>
+        <p style="color: #a1a1aa; font-size: 0.92rem; margin: 0;">Update login credentials. Passwords are stored as salted PBKDF2 hashes.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -248,11 +238,11 @@ def render_change_password(user_id: int):
         curr_pwd = st.text_input("Current Password", type="password")
         new_pwd = st.text_input("New Password (minimum 6 characters)", type="password")
         confirm_pwd = st.text_input("Confirm New Password", type="password")
-        submitted = st.form_submit_button("Update Password →", type="primary")
+        submitted = st.form_submit_button("Save Password", type="primary")
 
     if submitted:
         if new_pwd != confirm_pwd:
-            st.error("New passwords do not match. Please re-enter.")
+            st.error("New passwords do not match.")
         elif len(new_pwd) < 6:
             st.error("Password must be at least 6 characters long.")
         else:
