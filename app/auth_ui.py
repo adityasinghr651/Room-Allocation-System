@@ -121,16 +121,27 @@ def render_login():
                 else:
                     st.error("Invalid username or password. Please verify credentials.")
 
-        with st.expander("🔑 Demo Credentials (Quick Reference)", expanded=True):
+        with st.expander("🔑 Demo Credentials & Quick 1-Click Login", expanded=True):
             st.markdown("""
-            <div style="font-family: 'DM Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: #cbd5e1;">
-                <strong>Admin Console:</strong><br>
-                User: <code style="color: #93c5fd;">admin</code> &nbsp;|&nbsp; Pass: <code style="color: #93c5fd;">Admin@12345</code><br><br>
-                <strong>Student Portal:</strong><br>
-                User: <code style="color: #6ee7b7;">student001</code> &nbsp;|&nbsp; Pass: <code style="color: #6ee7b7;">Student@12345</code><br>
-                <span style="font-size: 0.72rem; color: #94a3b8;">(Student accounts range from student001 to student030)</span>
+            <div style="font-family: 'DM Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 0.8rem;">
+                <strong>Admin Console:</strong> User: <code style="color: #93c5fd;">admin</code> &nbsp;|&nbsp; Pass: <code style="color: #93c5fd;">Admin@12345</code><br>
+                <strong>Student Portal:</strong> User: <code style="color: #6ee7b7;">student001</code> &nbsp;|&nbsp; Pass: <code style="color: #6ee7b7;">Student@12345</code>
             </div>
             """, unsafe_allow_html=True)
-            st.caption("🔒 All credentials are demonstrative. Passwords are encrypted with PBKDF2-HMAC-SHA256.")
+            
+            c_btn1, c_btn2 = st.columns(2)
+            if c_btn1.button("👑 1-Click Admin", use_container_width=True):
+                user = authenticate("admin", "Admin@12345")
+                if user:
+                    st.session_state.user = user
+                    st.rerun()
+
+            if c_btn2.button("🎓 1-Click Student", use_container_width=True):
+                user = authenticate("student001", "Student@12345")
+                if user:
+                    st.session_state.user = user
+                    st.rerun()
+
+            st.caption("🔒 Passwords are encrypted with salted PBKDF2-HMAC-SHA256.")
 
         st.markdown("</div>", unsafe_allow_html=True)
