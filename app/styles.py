@@ -38,7 +38,7 @@ def apply_styles():
     }
 
     /* Core Reset */
-    html, body, [class*="css"] {
+    html, body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         letter-spacing: -0.015em;
         color: var(--text-primary);
@@ -50,6 +50,20 @@ def apply_styles():
         background-image: radial-gradient(circle at 50% 0%, #111116 0%, #000000 65%);
         color: var(--text-primary);
     }
+
+    /* Main Viewport Guarantee */
+    [data-testid="stMain"], .main, .block-container, section.main {
+        color: var(--text-primary) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 4rem !important;
+        max-width: 1240px !important;
+    }
+
 
     /* Streamlit Defaults Cleanup */
     header[data-testid="stHeader"] {

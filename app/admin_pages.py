@@ -31,23 +31,28 @@ def header(title: str, subtitle: str, tag: str = "CONSOLE"):
 
 
 def render_admin(page: str):
-    """Route admin view to corresponding screen."""
-    if page == "Overview":
+    """Route admin view to corresponding screen with resilient fallback."""
+    p = str(page).lower() if page else ""
+    if "overview" in p:
         overview_page()
-    elif page == "Students Directory":
+    elif "student" in p and ("director" in p or "roster" in p or "list" in p):
         students_page()
-    elif page == "Rooms & Geometry":
+    elif "room" in p or "geometr" in p or "venue" in p:
         rooms_page()
-    elif page == "Student Restrictions":
+    elif "restriction" in p:
         restrictions_page()
-    elif page == "CSP Allocation Engine":
+    elif "allocation" in p or "csp" in p or "solver" in p or "engine" in p:
         allocation_page()
-    elif page == "Seating Charts & Reports":
+    elif "chart" in p or "report" in p or "result" in p or "seating" in p:
         results_page()
-    elif page == "Audit Trail":
+    elif "audit" in p or "log" in p or "trail" in p:
         audit_page()
-    elif page == "System & Security":
+    elif "system" in p or "security" in p or "setting" in p or "password" in p:
         settings_page()
+    else:
+        # Resilient default: always show Overview rather than blank screen
+        overview_page()
+
 
 
 # ==============================================================================

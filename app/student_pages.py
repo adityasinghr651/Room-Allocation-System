@@ -8,7 +8,7 @@ from src.database import get_student_portal, change_password
 
 
 def render_student(page: str):
-    """Render selected student portal view."""
+    """Render selected student portal view with resilient fallback."""
     user = st.session_state.user
     data = get_student_portal(user['id'])
 
@@ -16,14 +16,19 @@ def render_student(page: str):
         st.warning("No student profile linked to this account. Contact examination control.")
         return
 
-    if page == "Examination Pass":
+    p = str(page).lower() if page else ""
+    if "pass" in p or "ticket" in p or "examination" in p:
         render_seating_pass(data)
-    elif page == "Room Seating Map":
+    elif "map" in p or "room" in p or "seating" in p:
         render_room_map(data)
-    elif page == "Candidate Guidelines":
+    elif "guideline" in p or "rule" in p or "exam" in p:
         render_exam_guidelines(data)
-    elif page == "Update Password":
+    elif "password" in p or "security" in p or "update" in p:
         render_change_password(user['id'])
+    else:
+        # Resilient default: always show examination seating pass
+        render_seating_pass(data)
+
 
 
 def render_seating_pass(data: dict):
