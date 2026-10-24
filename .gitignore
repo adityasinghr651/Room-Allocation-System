@@ -1,0 +1,33 @@
+# Python & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Streamlit Local Secrets & Cache
+.streamlit/secrets.toml
+
+# Environment Variables & Keys
+.env
+.env.local
+*.key
+*.pem
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases & Local Logs
+*.db-journal
+*.log
+
+# OS Metadata
+.DS_Store
+Thumbs.db
